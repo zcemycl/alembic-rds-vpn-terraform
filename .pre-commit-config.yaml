@@ -30,7 +30,7 @@ repos:
     - id: isort
 
     repos:
-    
+
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.81.0
     hooks:
