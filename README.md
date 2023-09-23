@@ -1,4 +1,5 @@
 # alembic-rds-vpn-terraform
+![image](resources/architecture.png)
 
 ## Local Development
 #### Initialisation (DO NOT RUN AGAIN)
