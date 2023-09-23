@@ -26,7 +26,7 @@ module "public_subnet_network" {
   map_subnet_to_public_route_tables = module.igw_network.public_route_tables
 }
 
-module "chroma_network" {
+module "private_network" {
   source                             = "./modules/subnets"
   name                               = "rds"
   subnets_cidr                       = var.private_subnets_cidr
