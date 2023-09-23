@@ -10,7 +10,7 @@ resource "aws_vpc" "base_vpc" {
 }
 
 module "igw_network" {
-  source                     = "../../modules/subnets"
+  source                     = "./modules/subnets"
   vpc_id                     = aws_vpc.base_vpc.id
   include_public_route_table = true
 }
