@@ -6,7 +6,7 @@ resource "random_password" "aurora" {
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
-  subnet_ids = module.private_network.subnets.*.id
+  subnet_ids = module.private_network.subnet_ids
 }
 
 resource "aws_db_instance" "rds" {
@@ -17,7 +17,7 @@ resource "aws_db_instance" "rds" {
   engine_version         = "11.18"
   skip_final_snapshot    = true
   publicly_accessible    = false
-  vpc_security_group_ids = [aws_security_groups.security_groups["rds"].id]
+  vpc_security_group_ids = [module.security_groups.security_groups["rds"].id]
   username               = "postgres"
   password               = random_password.aurora.result
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.id

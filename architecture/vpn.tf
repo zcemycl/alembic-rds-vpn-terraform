@@ -54,7 +54,7 @@ resource "aws_ec2_client_vpn_network_association" "client_vpn_association_privat
 resource "aws_ec2_client_vpn_authorization_rule" "authorization_rule" {
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.my_client_vpn.id
 
-  target_network_cidr  = var.vpc_cidr
+  target_network_cidr  = var.base_cidr_block
   authorize_all_groups = true
 }
 
