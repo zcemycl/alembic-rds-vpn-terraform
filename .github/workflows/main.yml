@@ -21,14 +21,17 @@ jobs:
          terraform_version: 1.3.0
 
      - name: Terraform init
+       working-directory: ./architecture
        id: init
        run: terraform init
 
      - name: Terraform format
+       working-directory: ./architecture
        id: fmt
        run: terraform fmt -check
 
      - name: Terraform validate
+       working-directory: ./architecture
        id: validate
        run: terraform validate
 
