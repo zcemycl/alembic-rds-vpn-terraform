@@ -47,3 +47,51 @@ module "loggings" {
     }
   ]
 }
+
+module "security_groups" {
+  source = "./modules/security_groups"
+  security_groups = [
+    {
+      name        = "rds"
+      description = ""
+      vpc_id      = aws_vpc.base_vpc.id
+      ingress_rules = [
+        {
+          from_port   = 5432
+          to_port     = 5432
+          protocol    = "tcp"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      ]
+      egress_rules = [
+        {
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      ]
+    },
+    {
+      name        = "vpn"
+      description = ""
+      vpc_id      = aws_vpc.base_vpc.id
+      ingress_rules = [
+        {
+          from_port   = 443
+          to_port     = 443
+          protocol    = "udp"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      ]
+      egress_rules = [
+        {
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      ]
+    }
+  ]
+}
