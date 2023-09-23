@@ -1,6 +1,6 @@
 # alembic-rds-vpn-terraform
 
-### Setup
+### Local dev Setup
 ```
 alembic init alembic
 docker-compose up --build
@@ -13,6 +13,12 @@ docker-compose up --build
 alembic -n dev upgrade head
 ```
 
+### Cloud Setup
+```
+cd architecture
+terraform init
+terraform apply -auto-approve
+```
 
 ### Cloud database migration
 ```
