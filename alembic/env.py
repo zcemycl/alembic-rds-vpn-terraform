@@ -4,6 +4,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+import boto3
+import json
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -39,8 +41,7 @@ def run_migrations_offline():
     script output.
 
     """
-    if config.get_main_option("env") == "dev":
-        url = config.get_main_option("sqlalchemy.url")
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -59,8 +60,22 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    db_config = config.get_section(config.config_ini_section)
+    if db_config["env"] == "dev":
+        pass
+    elif db_config["env"] == "cloud":
+        session = boto3.session.Session()
+        client = session.client(
+            service_name="secretsmanager", region_name="eu-west-2"
+        )
+        creds = json.loads(
+            client.get_secret_value(SecretId="rds-secrets")["SecretString"]
+        )
+        db_config[
+            "sqlalchemy.url"
+        ] = f"postgresql://postgres:{creds['db_pwd']}@{creds['db_host']}/postgres"
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        db_config,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

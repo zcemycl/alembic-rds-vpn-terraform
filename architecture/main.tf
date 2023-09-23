@@ -104,9 +104,9 @@ module "secrets" {
       group_name    = "rds-secrets"
       secret_string = <<EOF
             {
-                "db_user": "postgres"
-                "db_pwd": "${random_password.aurora.result}"
-                "db_host": "${aws_db_instance.rds.endpoint}"
+                "db_user": "postgres",
+                "db_pwd": "${random_password.aurora.result}",
+                "db_host": "${aws_db_instance.rds.endpoint}",
                 "db_port": 5432
             }
         EOF
