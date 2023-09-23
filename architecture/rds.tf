@@ -22,7 +22,3 @@ resource "aws_db_instance" "rds" {
   password               = random_password.aurora.result
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.id
 }
-
-output "db_instance_endpt" {
-  value = aws_db_instance.rds.endpoint
-}

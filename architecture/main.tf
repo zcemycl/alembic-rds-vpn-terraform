@@ -53,7 +53,7 @@ module "security_groups" {
   security_groups = [
     {
       name        = "rds"
-      description = ""
+      description = "rds security group"
       vpc_id      = aws_vpc.base_vpc.id
       ingress_rules = [
         {
@@ -74,7 +74,7 @@ module "security_groups" {
     },
     {
       name        = "vpn"
-      description = ""
+      description = "vpn security group"
       vpc_id      = aws_vpc.base_vpc.id
       ingress_rules = [
         {
@@ -93,5 +93,23 @@ module "security_groups" {
         }
       ]
     }
+  ]
+}
+
+module "secrets" {
+  source = "./modules/secrets"
+  secrets = [
+    {
+      name          = "rds"
+      group_name    = "rds-secrets"
+      secret_string = <<EOF
+            {
+                "db_user": "postgres"
+                "db_pwd": "${random_password.aurora.result}"
+                "db_host": "${aws_db_instance.rds.endpoint}"
+                "db_port": 5432
+            }
+        EOF
+    },
   ]
 }
