@@ -9,7 +9,7 @@ from example_package.dataclasses import persons
 def test_db(get_engine):
     engine = get_engine
 
-    with open(Path("tests/test_data/base_persons.json"), "r") as f:
+    with open(Path("tests/test_data/base-persons.json"), "r") as f:
         jsons = json.load(f)
 
     stmt = insert(persons).values(jsons)
