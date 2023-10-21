@@ -2,3 +2,6 @@ sqlmodel
 psycopg2
 sqlalchemy
 boto3
+fastapi
+pydantic
+uvicorn
