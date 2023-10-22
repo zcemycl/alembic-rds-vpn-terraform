@@ -4,7 +4,11 @@ from typing import Iterator
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-db_url = os.environ["DB_URL"]
+db_url = (
+    os.environ["DB_URL"]
+    if "DB_URL" in os.environ
+    else "postgresql://postgres:postgres@localhost/postgres"
+)
 
 engine = None
 

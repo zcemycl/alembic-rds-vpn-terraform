@@ -1,8 +1,16 @@
+import json
+from pathlib import Path
+
 import pytest
 
+from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.sql import insert
 
-from example_package.dataclasses import metadata
+from app.database import get_session
+from app.main import app
+from example_package.dataclasses import metadata, persons
 
 
 @pytest.fixture(scope="session")
@@ -13,4 +21,35 @@ def get_engine() -> Engine:
     metadata.drop_all(bind=engine)
     metadata.create_all(bind=engine)
 
+    with open(Path("tests/test_data/base-persons.json"), "r") as f:
+        jsons = json.load(f)
+
+    stmt = insert(persons).values(jsons)
+    with engine.begin() as conn:
+        _ = conn.execute(stmt)
+
     yield engine
+    engine.dispose()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def test_session(get_engine: Engine) -> Session:
+    session = sessionmaker(
+        bind=get_engine, expire_on_commit=False, class_=Session
+    )
+    with session() as session:
+        yield session
+        session.close()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def test_client(test_session: Session) -> TestClient:
+    def _local_session():
+        try:
+            yield test_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_session] = _local_session
+    with TestClient(app) as client:
+        yield client
