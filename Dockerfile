@@ -1,4 +1,5 @@
 FROM python:3.9
+ENV DB_URL=
 ENV WITHIN_DOCKER_ENV=1
 WORKDIR /code
 RUN  pip install --upgrade pip

@@ -23,6 +23,7 @@ services:
       dockerfile: Dockerfile
     environment:
       WITHIN_DOCKER_ENV: 1
+      DB_URL: "postgresql://postgres:postgres@db/postgres"
     ports:
       - 4555:80
     networks:
