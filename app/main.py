@@ -5,7 +5,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
-from example_package.dataclasses import persons
+from example_package.dataclasses import person
 
 from .database import get_session
 
@@ -24,7 +24,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.get("/persons")
 def get_persons(session: Session = Depends(get_session)):
-    stmt = select(persons)
+    stmt = select(person)
     res = session.execute(stmt).all()
     logger.info(res)
     return res

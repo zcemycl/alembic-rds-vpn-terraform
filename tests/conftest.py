@@ -10,7 +10,7 @@ from sqlalchemy.sql import insert
 
 from app.database import get_session
 from app.main import app
-from example_package.dataclasses import metadata, persons
+from example_package.dataclasses import metadata, person
 
 
 @pytest.fixture(scope="session")
@@ -24,7 +24,7 @@ def get_engine() -> Engine:
     with open(Path("tests/test_data/base-persons.json"), "r") as f:
         jsons = json.load(f)
 
-    stmt = insert(persons).values(jsons)
+    stmt = insert(person).values(jsons)
     with engine.begin() as conn:
         _ = conn.execute(stmt)
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from sqlalchemy.sql import insert
 
-from example_package.dataclasses import persons
+from example_package.dataclasses import person
 
 
 def test_db(get_engine):
@@ -12,6 +12,6 @@ def test_db(get_engine):
     with open(Path("tests/test_data/create-persons.json"), "r") as f:
         jsons = json.load(f)
 
-    stmt = insert(persons).values(jsons)
+    stmt = insert(person).values(jsons)
     with engine.begin() as conn:
         _ = conn.execute(stmt)
