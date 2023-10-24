@@ -20,7 +20,7 @@ class friendship(Base):
     parent_person_id = Column(
         "parent_person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -28,7 +28,7 @@ class friendship(Base):
     child_person_id = Column(
         "child_person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -45,7 +45,7 @@ class person_skill_link(Base):
     person_id = Column(
         "person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -53,7 +53,7 @@ class person_skill_link(Base):
     skill_id = Column(
         "skill_id",
         Integer,
-        ForeignKey("skill.id"),
+        ForeignKey("skill.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,

@@ -41,3 +41,9 @@ def test_orm_link(test_session2):
     assert p1.child_friendships[0].id == p2.id
     assert p2.child_friendships == []
     assert p2.parent_friendships == [p1]
+
+    test_session2.query(d.skill).filter(d.skill.id == s1.id).delete()
+    test_session2.commit()
+
+    test_session2.query(d.person).filter(d.person.id == p2.id).delete()
+    test_session2.commit()
