@@ -35,6 +35,7 @@ def get_engine() -> Engine:
 
 @pytest.fixture(autouse=True)
 def reset(get_engine: Engine):
+    print("1")
     engine = get_engine
     metadata.drop_all(bind=engine)
     metadata.create_all(bind=engine)

@@ -21,7 +21,7 @@ friendship = Table(
     Column(
         "parent_person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -29,7 +29,7 @@ friendship = Table(
     Column(
         "child_person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -45,7 +45,7 @@ person_skill_link = Table(
     Column(
         "person_id",
         Integer,
-        ForeignKey("person.id"),
+        ForeignKey("person.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,
@@ -53,7 +53,7 @@ person_skill_link = Table(
     Column(
         "skill_id",
         Integer,
-        ForeignKey("skill.id"),
+        ForeignKey("skill.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
         unique=False,

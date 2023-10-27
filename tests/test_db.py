@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from sqlalchemy.sql import insert, select
+from sqlalchemy.sql import delete, insert, select
 
 import example_package.dataclasses.orm as d
-from example_package.dataclasses import person
+from example_package.dataclasses import friendship, person
 
 
 def test_db(get_engine):
@@ -16,6 +16,37 @@ def test_db(get_engine):
     stmt = insert(person).values(jsons)
     with engine.begin() as conn:
         _ = conn.execute(stmt)
+
+
+def test_db_core_link(get_engine):
+    engine = get_engine
+
+    with engine.begin() as conn:
+        _ = conn.execute(
+            insert(person).values(
+                [
+                    {
+                        "firstname": "1",
+                        "lastname": "1",
+                        "others": {},
+                        "role": "developer",
+                    },
+                    {
+                        "firstname": "2",
+                        "lastname": "2",
+                        "others": {},
+                        "role": "developer",
+                    },
+                ]
+            )
+        )
+        _ = conn.execute(
+            insert(friendship).values(
+                [{"parent_person_id": 1, "child_person_id": 2}]
+            )
+        )
+        d = delete(person).where(person.c.id == 1)
+        conn.execute(d)
 
 
 def test_orm_link(test_session2):
