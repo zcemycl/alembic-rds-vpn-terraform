@@ -14,7 +14,7 @@ from app.main import app
 from example_package.dataclasses import metadata, person
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(autouse=True)
 def get_engine() -> Engine:
     db_url = "postgresql://postgres:postgres@localhost/postgres"
     engine = create_engine(db_url)
@@ -34,14 +34,6 @@ def get_engine() -> Engine:
 
 
 @pytest.fixture(autouse=True)
-def reset(get_engine: Engine):
-    print("1")
-    engine = get_engine
-    metadata.drop_all(bind=engine)
-    metadata.create_all(bind=engine)
-
-
-@pytest.fixture(scope="session")
 def get_engine2() -> Engine:
     db_url = "postgresql://postgres:postgres@localhost/postgres"
     engine = create_engine(db_url)
@@ -58,13 +50,6 @@ def get_engine2() -> Engine:
 
     yield engine
     engine.dispose()
-
-
-@pytest.fixture(autouse=True)
-def reset2(get_engine2: Engine):
-    engine = get_engine2
-    d.metadata.drop_all(bind=engine)
-    d.metadata.create_all(bind=engine)
 
 
 @pytest.fixture(scope="function", autouse=True)
