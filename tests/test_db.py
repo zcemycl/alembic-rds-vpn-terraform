@@ -36,31 +36,31 @@ def test_db_core_link(get_engine):
 
 
 def test_orm_link(test_session2):
-    p1 = d.person(firstname="1", lastname="1", others={}, role="developer")
-    s1 = d.skill(name="python", persons=[p1])
-    p2 = d.person(
-        firstname="2",
-        lastname="2",
-        others={},
-        role="developer",
-        parent_friendships=[p1],
-    )
-    test_session2.add_all([p1, s1, p2])
+    ps = []
+    with open(Path("tests/test_data/base-persons.json"), "r") as f:
+        jsons = json.load(f)
+
+    for tmpjson in jsons:
+        tmpp = d.person(**tmpjson)
+        ps.append(tmpp)
+    ps[1].parent_friendships = [ps[0]]
+    s1 = d.skill(name="python", persons=[ps[0]])
+    test_session2.add_all(ps + [s1])
     test_session2.commit()
 
     p1_ = test_session2.execute(
-        select(d.person).where(d.person.id == p1.id)
+        select(d.person).where(d.person.id == ps[0].id)
     ).scalar()
 
     assert s1.id == p1_.skills[0].id
     assert p1_.parent_friendships == []
-    assert p1_.child_friendships[0].id == p2.id
-    assert p1.child_friendships[0].id == p2.id
-    assert p2.child_friendships == []
-    assert p2.parent_friendships == [p1]
+    assert p1_.child_friendships[0].id == ps[1].id
+    assert ps[0].child_friendships[0].id == ps[1].id
+    assert ps[1].child_friendships == []
+    assert ps[1].parent_friendships == [ps[0]]
 
-    test_session2.query(d.skill).filter(d.skill.id == s1.id).delete()
+    test_session2.query(d.skill).filter(d.skill.id == ps[0].id).delete()
     test_session2.commit()
 
-    test_session2.query(d.person).filter(d.person.id == p2.id).delete()
+    test_session2.query(d.person).filter(d.person.id == ps[1].id).delete()
     test_session2.commit()
