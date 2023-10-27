@@ -1,17 +1,13 @@
-import json
-from pathlib import Path
-
 import pytest
 
 from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.sql import insert
 
 import example_package.dataclasses.orm as d
 from app.database import get_session
 from app.main import app
-from example_package.dataclasses import metadata, person
+from example_package.dataclasses import metadata
 
 
 @pytest.fixture(autouse=True)
@@ -21,13 +17,6 @@ def get_engine() -> Engine:
 
     metadata.drop_all(bind=engine)
     metadata.create_all(bind=engine)
-
-    with open(Path("tests/test_data/base-persons.json"), "r") as f:
-        jsons = json.load(f)
-
-    stmt = insert(person).values(jsons)
-    with engine.begin() as conn:
-        _ = conn.execute(stmt)
 
     yield engine
     engine.dispose()
@@ -40,13 +29,6 @@ def get_engine2() -> Engine:
 
     d.metadata.drop_all(bind=engine)
     d.metadata.create_all(bind=engine)
-
-    with open(Path("tests/test_data/base-persons.json"), "r") as f:
-        jsons = json.load(f)
-
-    stmt = insert(person).values(jsons)
-    with engine.begin() as conn:
-        _ = conn.execute(stmt)
 
     yield engine
     engine.dispose()
