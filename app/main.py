@@ -1,12 +1,9 @@
 from fastapi import Depends, FastAPI
-from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
 
-# import example_package.dataclasses.orm as d
 from example_package.dataclasses import person
 
-from .database import get_async_session
+from .database import get_async_engine
 
 app = FastAPI()
 
@@ -29,10 +26,11 @@ async def read_root():
 
 @app.get("/async/persons")
 async def get_async_persons(
-    session: AsyncSession = Depends(get_async_session),
+    conn=Depends(get_async_engine),
 ):
     stmt = select(person)
-    res = await session.execute(stmt)
-    res = res.all()
-    logger.info(res)
-    return res
+    res = await conn.execute(stmt)
+
+    return [
+        dict(zip(person.columns.keys(), list(tmp))) for tmp in res.fetchall()
+    ]
