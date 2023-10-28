@@ -8,23 +8,23 @@ from sqlalchemy.sql import select
 
 import example_package.dataclasses.orm as d
 
-# from example_package.dataclasses import friendship, person
 
-# @pytest.mark.asyncio
-# async def test_db_core_link(get_engine):
-#     conn = get_engine
+@pytest.mark.asyncio
+async def test_orm_person(test_session_orm):
+    with open(Path("tests/test_data/base-persons.json"), "r") as f:
+        jsons = json.load(f)
 
-#     with open(Path("tests/test_data/base-persons.json"), "r") as f:
-#         jsons = json.load(f)
+    ps = [d.person(**tmpjson) for tmpjson in jsons]
 
-#     _ = await conn.execute(insert(person).values(jsons))
-#     _ = await conn.execute(
-#         insert(friendship).values(
-#             [{"parent_person_id": 1, "child_person_id": 2}]
-#         )
-#     )
-#     d = delete(person).where(person.c.id == 1)
-#     await conn.execute(d)
+    test_session_orm.add_all(ps)
+    await test_session_orm.commit()
+
+    p1_ = (
+        await test_session_orm.execute(
+            select(d.person).where(d.person.id == ps[0].id)
+        )
+    ).scalar()
+    assert p1_.id == ps[0].id
 
 
 @pytest.mark.asyncio

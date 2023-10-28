@@ -18,12 +18,6 @@ logger.info(f"new: {db_async_url}")
 async_engine = create_async_engine(db_async_url)
 
 
-# def make_async_engine() -> AsyncEngine:
-#     global async_engine
-#     if async_engine is None:
-#         async_engine = create_async_engine(db_async_url)
-
-
 async def get_async_session() -> Iterator[AsyncSession]:
     session = async_sessionmaker(
         async_engine,

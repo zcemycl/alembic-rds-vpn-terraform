@@ -3,8 +3,7 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
 
-# import example_package.dataclasses.orm as d
-from example_package.dataclasses import person
+import example_package.dataclasses.orm as d
 
 from .database import get_async_session
 
@@ -31,8 +30,8 @@ async def read_root():
 async def get_async_persons(
     session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = select(person)
-    res = await session.execute(stmt)
-    res = res.all()
-    logger.info(res)
-    return res
+    stmt = select(d.person)
+    res = (await session.execute(stmt)).scalars().all()
+    jsons = [tmpres.__dict__ for tmpres in res]
+    logger.info(jsons)
+    return jsons
