@@ -18,12 +18,13 @@ services:
     networks:
       - net
   app:
+    environment:
+      WITHIN_DOCKER_ENV: 1
+      DB_URL: postgresql://postgres:postgres@db/postgres
+      DB_ASYNC_URL: postgresql+asyncpg://postgres:postgres@db/postgres
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      WITHIN_DOCKER_ENV: 1
-      DB_URL: "postgresql://postgres:postgres@db/postgres"
     ports:
       - 4555:80
     networks:

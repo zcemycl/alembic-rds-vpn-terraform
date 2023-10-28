@@ -1,41 +1,34 @@
 import json
 from pathlib import Path
 
-from sqlalchemy.sql import delete, insert, select
+import pytest
+
+from sqlalchemy.orm import selectinload
+from sqlalchemy.sql import select
 
 import example_package.dataclasses.orm as d
-from example_package.dataclasses import friendship, person
+
+# from example_package.dataclasses import friendship, person
+
+# @pytest.mark.asyncio
+# async def test_db_core_link(get_engine):
+#     conn = get_engine
+
+#     with open(Path("tests/test_data/base-persons.json"), "r") as f:
+#         jsons = json.load(f)
+
+#     _ = await conn.execute(insert(person).values(jsons))
+#     _ = await conn.execute(
+#         insert(friendship).values(
+#             [{"parent_person_id": 1, "child_person_id": 2}]
+#         )
+#     )
+#     d = delete(person).where(person.c.id == 1)
+#     await conn.execute(d)
 
 
-def test_db(get_engine):
-    engine = get_engine
-
-    with open(Path("tests/test_data/create-persons.json"), "r") as f:
-        jsons = json.load(f)
-
-    stmt = insert(person).values(jsons)
-    with engine.begin() as conn:
-        _ = conn.execute(stmt)
-
-
-def test_db_core_link(get_engine):
-    engine = get_engine
-
-    with open(Path("tests/test_data/base-persons.json"), "r") as f:
-        jsons = json.load(f)
-
-    with engine.begin() as conn:
-        _ = conn.execute(insert(person).values(jsons))
-        _ = conn.execute(
-            insert(friendship).values(
-                [{"parent_person_id": 1, "child_person_id": 2}]
-            )
-        )
-        d = delete(person).where(person.c.id == 1)
-        conn.execute(d)
-
-
-def test_orm_link(test_session2):
+@pytest.mark.asyncio
+async def test_orm_link(test_session_orm):
     ps = []
     with open(Path("tests/test_data/base-persons.json"), "r") as f:
         jsons = json.load(f)
@@ -45,12 +38,19 @@ def test_orm_link(test_session2):
         ps.append(tmpp)
     ps[1].parent_friendships = [ps[0]]
     s1 = d.skill(name="python", persons=[ps[0]])
-    test_session2.add_all(ps + [s1])
-    test_session2.commit()
+    test_session_orm.add_all(ps + [s1])
+    await test_session_orm.commit()
 
-    p1_ = test_session2.execute(
-        select(d.person).where(d.person.id == ps[0].id)
-    ).scalar()
+    p1_promise = await test_session_orm.execute(
+        select(d.person)
+        .where(d.person.id == ps[0].id)
+        .options(selectinload(d.person.parent_friendships))
+        .options(selectinload(d.person.child_friendships))
+    )
+    p1_ = p1_promise.scalar()
+    await test_session_orm.refresh(
+        ps[1], attribute_names=["child_friendships"]
+    )
 
     assert s1.id == p1_.skills[0].id
     assert p1_.parent_friendships == []
@@ -59,8 +59,18 @@ def test_orm_link(test_session2):
     assert ps[1].child_friendships == []
     assert ps[1].parent_friendships == [ps[0]]
 
-    test_session2.query(d.skill).filter(d.skill.id == ps[0].id).delete()
-    test_session2.commit()
+    s1_ = (
+        await test_session_orm.execute(
+            select(d.skill).where(d.skill.id == s1.id)
+        )
+    ).scalar()
+    await test_session_orm.delete(s1_)
+    await test_session_orm.commit()
 
-    test_session2.query(d.person).filter(d.person.id == ps[1].id).delete()
-    test_session2.commit()
+    p2_ = (
+        await test_session_orm.execute(
+            select(d.person).where(d.person.id == ps[1].id)
+        )
+    ).scalar()
+    await test_session_orm.delete(p2_)
+    await test_session_orm.commit()

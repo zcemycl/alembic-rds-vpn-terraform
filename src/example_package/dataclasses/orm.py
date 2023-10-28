@@ -7,12 +7,16 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from .common import Role
 
-Base = declarative_base()
-metadata = Base.metadata
+
+# Base = declarative_base()
+# metadata = Base.metadata
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
 
 
 class friendship(Base):

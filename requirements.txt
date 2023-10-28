@@ -1,9 +1,12 @@
-sqlmodel
+# sqlmodel
 psycopg2
-sqlalchemy
+# sqlalchemy
 boto3
 fastapi
 pydantic
+gunicorn
 uvicorn
 loguru
 httpx
+asyncpg
+sqlalchemy[asyncio]
