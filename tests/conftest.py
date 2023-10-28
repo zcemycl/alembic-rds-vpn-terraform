@@ -31,29 +31,6 @@ async def get_engine():
         engine.sync_engine.dispose()
 
 
-# @pytest.fixture(autouse=True)
-# def get_engine_orm() -> AsyncEngine:
-#     db_url = "postgresql+asyncpg://postgres:postgres@localhost/postgres"
-#     engine = create_async_engine(db_url)
-
-#     yield engine
-#     engine.sync_engine.dispose()
-
-
-# @pytest_asyncio.fixture(autouse=True)
-# async def test_session_orm(get_engine_orm: AsyncEngine) -> AsyncSession:
-#     async with get_engine_orm.begin() as conn:
-#         await conn.run_sync(d.Base.metadata.drop_all)
-#         await conn.run_sync(d.Base.metadata.create_all)
-#         _local_async_session = async_sessionmaker(
-#             expire_on_commit=False, class_=AsyncSession, bind=get_engine_orm
-#         )
-#         async with _local_async_session(bind=conn) as sess:
-#             yield sess
-#             await sess.flush()
-#             await sess.rollback()
-
-
 @pytest_asyncio.fixture(autouse=True)
 async def test_async_client(get_engine) -> AsyncClient:
     def _local_engine():

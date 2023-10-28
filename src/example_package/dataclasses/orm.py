@@ -13,8 +13,6 @@ from sqlalchemy.orm import DeclarativeBase, relationship
 from .common import Role
 
 
-# Base = declarative_base()
-# metadata = Base.metadata
 class Base(AsyncAttrs, DeclarativeBase):
     pass
 
