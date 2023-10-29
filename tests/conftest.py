@@ -7,23 +7,10 @@ from sqlalchemy.orm import Session, sessionmaker
 import example_package.dataclasses.orm as d
 from app.database import get_session
 from app.main import app
-from example_package.dataclasses import metadata
 
 
 @pytest.fixture(autouse=True)
 def get_engine() -> Engine:
-    db_url = "postgresql://postgres:postgres@localhost/postgres"
-    engine = create_engine(db_url)
-
-    metadata.drop_all(bind=engine)
-    metadata.create_all(bind=engine)
-
-    yield engine
-    engine.dispose()
-
-
-@pytest.fixture(autouse=True)
-def get_engine2() -> Engine:
     db_url = "postgresql://postgres:postgres@localhost/postgres"
     engine = create_engine(db_url)
 
@@ -38,16 +25,6 @@ def get_engine2() -> Engine:
 def test_session(get_engine: Engine) -> Session:
     session = sessionmaker(
         bind=get_engine, expire_on_commit=False, class_=Session
-    )
-    with session() as session:
-        yield session
-        session.close()
-
-
-@pytest.fixture(scope="function", autouse=True)
-def test_session2(get_engine2: Engine) -> Session:
-    session = sessionmaker(
-        bind=get_engine2, expire_on_commit=False, class_=Session
     )
     with session() as session:
         yield session
