@@ -1,8 +1,6 @@
 import os
-from typing import Iterator
 
 from sqlalchemy.engine import Engine, create_engine
-from sqlalchemy.orm import Session, sessionmaker
 
 db_url = (
     os.environ["DB_URL"]
@@ -20,14 +18,7 @@ def make_engine() -> Engine:
     return engine
 
 
-def get_session() -> Iterator[Session]:
-    session = sessionmaker(
-        autocommit=False,
-        autoflush=False,
-        bind=make_engine(),
-        class_=Session,
-        expire_on_commit=False,
-    )
-    with session() as session:
-        yield session
-        session.close()
+def get_sync_engine():
+    with engine.begin() as conn:
+        yield conn
+        conn.dispose()
