@@ -1,3 +1,4 @@
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Column,
     Enum,
@@ -61,6 +62,12 @@ class person_skill_link(Base):
     __table_args__ = (
         UniqueConstraint("person_id", "skill_id", name="person_skill_case"),
     )
+
+
+class article(Base):
+    __tablename__ = "article"
+    id = Column("id", Integer, primary_key=True)
+    factors = Column("factors", Vector(20))
 
 
 class person(Base):
