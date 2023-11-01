@@ -1,19 +1,25 @@
+import sqlalchemy as sa
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Column,
     Enum,
     ForeignKey,
+    Index,
     Integer,
     String,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import declarative_base, relationship
 
 from .common import Role
 
 Base = declarative_base()
 metadata = Base.metadata
+
+
+class TSVector(sa.types.TypeDecorator):
+    impl = TSVECTOR
 
 
 class friendship(Base):
@@ -67,7 +73,20 @@ class person_skill_link(Base):
 class article(Base):
     __tablename__ = "article"
     id = Column("id", Integer, primary_key=True)
+    title = Column("title", String)
+    description = Column("description", String)
     factors = Column("factors", Vector(20))
+
+    __ts_vector__ = Column(
+        TSVector(),
+        sa.Computed(
+            "to_tsvector('english', title || ' ' || description)",
+            persisted=True,
+        ),
+    )
+    __table_args__ = (
+        Index("ix_video___ts_vector__", __ts_vector__, postgresql_using="gin"),
+    )
 
 
 class person(Base):
