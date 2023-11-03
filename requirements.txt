@@ -1,6 +1,3 @@
-# sqlmodel
-psycopg2
-# sqlalchemy
 boto3
 fastapi
 pydantic
@@ -11,3 +8,5 @@ httpx
 asyncpg
 sqlalchemy[asyncio]
 pgvector
+asyncio
+psycopg2-binary
