@@ -1,5 +1,4 @@
 import os
-from typing import Iterator
 
 from loguru import logger
 from sqlalchemy.ext.asyncio import (
