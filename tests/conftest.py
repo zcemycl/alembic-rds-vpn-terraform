@@ -1,35 +1,59 @@
+import asyncio
+
 import pytest
 
-from fastapi.testclient import TestClient
-from sqlalchemy.engine import Engine, create_engine
+import pytest_asyncio
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
-from app.database import get_sync_engine
+import example_package.dataclasses.orm as d
+from app.database import get_async_session
 from app.main import app
-from example_package.dataclasses import metadata
+
+
+@pytest.fixture(scope="session")
+def event_loop() -> asyncio.AbstractEventLoop:
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture(autouse=True)
-def get_engine() -> Engine:
-    db_url = "postgresql://postgres:postgres@localhost/postgres"
-    engine = create_engine(db_url)
+def get_engine_orm() -> AsyncEngine:
+    db_url = "postgresql+asyncpg://postgres:postgres@localhost/postgres"
+    engine = create_async_engine(db_url)
 
-    # Comment these 2 lines out for alembic migration test
-    metadata.drop_all(bind=engine)
-    metadata.create_all(bind=engine)
-
-    with engine.begin() as conn:
-        yield conn
-        engine.dispose()
+    yield engine
+    engine.sync_engine.dispose()
 
 
-@pytest.fixture(scope="function", autouse=True)
-def test_client(get_engine) -> TestClient:
-    def _local_engine():
+@pytest_asyncio.fixture(autouse=True)
+async def test_session_orm(get_engine_orm: AsyncEngine) -> AsyncSession:
+    async with get_engine_orm.begin() as conn:
+        await conn.run_sync(d.Base.metadata.drop_all)
+        await conn.run_sync(d.Base.metadata.create_all)
+        _local_async_session = async_sessionmaker(
+            expire_on_commit=False, class_=AsyncSession, bind=get_engine_orm
+        )
+        async with _local_async_session(bind=conn) as sess:
+            yield sess
+            await sess.flush()
+            await sess.rollback()
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def test_async_client(test_session_orm: AsyncSession) -> AsyncClient:
+    def _local_session():
         try:
-            yield get_engine
+            yield test_session_orm
         finally:
             pass
 
-    app.dependency_overrides[get_sync_engine] = _local_engine
-    with TestClient(app) as client:
-        yield client
+    app.dependency_overrides[get_async_session] = _local_session
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac

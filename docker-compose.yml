@@ -4,7 +4,9 @@ networks:
     driver: bridge
 services:
   db:
-    image: postgres:14.1-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.pgvector
     restart: always
     environment:
       - POSTGRES_USER=postgres
@@ -12,7 +14,7 @@ services:
       - POSTGRES_DATABASE=postgres
       # - PGDATA=/var/lib/postgresql/data/
     # volumes:
-    #   - ./mock_data:/var/lib/postgresql/data
+    #   - "./src/sql/init.sql:/docker-entrypoint-initdb.d/"
     ports:
       - '5432:5432'
     networks:

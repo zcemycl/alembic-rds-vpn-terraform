@@ -1,24 +1,31 @@
 import os
+from typing import Iterator
 
-from sqlalchemy.engine import Engine, create_engine
-
-db_url = (
-    os.environ["DB_URL"]
-    if "DB_URL" in os.environ
-    else "postgresql://postgres:postgres@localhost/postgres"
+from loguru import logger
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
 
-engine = None
+db_async_url = (
+    os.environ["DB_ASYNC_URL"]
+    if "DB_ASYNC_URL" in os.environ and os.environ["DB_ASYNC_URL"]
+    else "postgresql+asyncpg://postgres:postgres@localhost/postgres"
+)
+logger.info(f"new: {db_async_url}")
+
+async_engine = create_async_engine(db_async_url)
 
 
-def make_engine() -> Engine:
-    global engine
-    if engine is None:
-        engine = create_engine(db_url)
-    return engine
-
-
-def get_sync_engine():
-    with engine.begin() as conn:
-        yield conn
-        conn.dispose()
+async def get_async_session() -> Iterator[AsyncSession]:
+    session = async_sessionmaker(
+        async_engine,
+        autocommit=False,
+        autoflush=False,
+        # bind=create_async_engine(db_async_url),
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+    async with session() as sess:
+        yield sess

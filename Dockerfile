@@ -1,5 +1,8 @@
-FROM python:3.9
-ENV DB_URL=
+FROM python:3.10
+ARG DB_URL
+ARG DB_ASYNC_URL
+ENV DB_URL=${DB_URL}
+ENV DB_ASYNC_URL=${DB_ASYNC_URL}
 ENV WITHIN_DOCKER_ENV=1
 WORKDIR /code
 RUN  pip install --upgrade pip

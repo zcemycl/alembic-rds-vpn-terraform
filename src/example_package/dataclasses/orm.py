@@ -1,18 +1,29 @@
+from __future__ import annotations
+
+import sqlalchemy as sa
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Column,
     Enum,
     ForeignKey,
+    Index,
     Integer,
     String,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from .common import Role
 
-Base = declarative_base()
-metadata = Base.metadata
+
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
+
+
+class TSVector(sa.types.TypeDecorator):
+    impl = TSVECTOR
 
 
 class friendship(Base):
@@ -60,6 +71,26 @@ class person_skill_link(Base):
     )
     __table_args__ = (
         UniqueConstraint("person_id", "skill_id", name="person_skill_case"),
+    )
+
+
+class article(Base):
+    __tablename__ = "article"
+    __table_args__ = (
+        Index("ix_article___ts_vector__", "ts_vector", postgresql_using="gin"),
+    )
+
+    id = Column("id", Integer, primary_key=True)
+    title = Column("title", String)
+    description = Column("description", String)
+    factors = Column("factors", Vector(20))
+
+    ts_vector = Column(
+        TSVector(),
+        sa.Computed(
+            "to_tsvector('english', title || ' ' || description)",
+            persisted=True,
+        ),
     )
 
 
