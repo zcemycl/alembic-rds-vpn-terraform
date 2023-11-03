@@ -74,3 +74,34 @@ async def test_orm_link(test_session_orm):
     ).scalar()
     await test_session_orm.delete(p2_)
     await test_session_orm.commit()
+
+
+@pytest.mark.asyncio
+async def test_article(test_session_orm):
+    sess = test_session_orm
+    a1 = d.article(
+        title="introduction", description="I am Leo", factors=20 * [1]
+    )
+    a2 = d.article(title="summary", description="Bye Bye!", factors=20 * [10])
+    a3 = d.article(
+        title="methodology",
+        description="I am using pgvector",
+        factors=20 * [2],
+    )
+    all_a = [a1, a3, a2]
+    sess.add_all(all_a)
+    await sess.commit()
+
+    stmt = select(d.article).where(d.article.ts_vector.match("Leo"))
+    a_res = (await sess.execute(stmt)).scalars().all()
+    assert (
+        a_res[0].title + ":" + a_res[0].description
+        == a1.title + ":" + a1.description
+    )
+
+    stmt = select(d.article).order_by(
+        d.article.factors.l2_distance(a1.factors)
+    )
+    a_res = (await sess.execute(stmt)).scalars().all()
+    for i in range(len(all_a)):
+        assert a_res[i].title == all_a[i].title
