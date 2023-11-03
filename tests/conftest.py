@@ -13,6 +13,7 @@ def get_engine() -> Engine:
     db_url = "postgresql://postgres:postgres@localhost/postgres"
     engine = create_engine(db_url)
 
+    # Comment these 2 lines out for alembic migration test
     metadata.drop_all(bind=engine)
     metadata.create_all(bind=engine)
 
