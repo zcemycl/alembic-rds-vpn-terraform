@@ -142,4 +142,5 @@ def downgrade():
     op.drop_table("person")
     op.drop_index("ix_video___ts_vector__", table_name="article")
     op.drop_table("article")
+    op.execute("DROP TYPE role;")
     # ### end Alembic commands ###
