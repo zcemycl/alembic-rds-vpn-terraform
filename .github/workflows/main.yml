@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: zcemycl123/pgvector:latest
 
         env:
           POSTGRES_PASSWORD: postgres
