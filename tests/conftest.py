@@ -28,13 +28,14 @@ def get_engine_orm() -> AsyncEngine:
     db_url = "postgresql+asyncpg://postgres:postgres@localhost/postgres"
     engine = create_async_engine(
         db_url,
-        connect_args={
-            "server_settings": {
-                "tcp_keepalives_idle": "600",
-                "tcp_keepalives_interval": "30",
-                "tcp_keepalives_count": "10",
-            }
-        },
+        pool_recycle=1800,
+        # connect_args={
+        #     "server_settings": {
+        #         "tcp_keepalives_idle": "600",
+        #         "tcp_keepalives_interval": "30",
+        #         "tcp_keepalives_count": "10",
+        #     }
+        # },
     )
 
     yield engine
