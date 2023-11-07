@@ -24,6 +24,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class TSVector(sa.types.TypeDecorator):
     impl = TSVECTOR
+    cache_ok = True
 
 
 class friendship(Base):
