@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -7,6 +8,16 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.sql import select
 
 import example_package.dataclasses.orm as d
+
+
+def is_github_actions():
+    if (
+        "CI" not in os.environ
+        or not os.environ["CI"]
+        or "GITHUB_RUN_ID" not in os.environ
+    ):
+        return False
+    return True
 
 
 @pytest.mark.asyncio
@@ -76,6 +87,9 @@ async def test_orm_link(test_session_orm):
     await test_session_orm.commit()
 
 
+@pytest.mark.skipif(
+    is_github_actions(), reason="avoid running in github actions"
+)
 @pytest.mark.asyncio
 async def test_article_tsvector(test_session_orm):
     sess = test_session_orm
@@ -100,7 +114,9 @@ async def test_article_tsvector(test_session_orm):
     )
 
 
-@pytest.mark.skip(reason="timeout in github actions")
+@pytest.mark.skipif(
+    is_github_actions(), reason="avoid running in github actions"
+)
 @pytest.mark.asyncio
 async def test_article_pgvector(test_session_orm):
     sess = test_session_orm
