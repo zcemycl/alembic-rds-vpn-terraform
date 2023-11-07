@@ -116,9 +116,9 @@ async def test_article_pgvector(test_session_orm):
     sess.add_all(all_a)
     await sess.commit()
 
-    stmt = select(d.article).order_by(
+    stmt = select(d.article.title).order_by(
         d.article.factors.l2_distance(a1.factors)
     )
     a_res = (await sess.execute(stmt)).scalars().all()
     for i in range(len(all_a)):
-        assert a_res[i].title == all_a[i].title
+        assert a_res[i] == all_a[i].title
