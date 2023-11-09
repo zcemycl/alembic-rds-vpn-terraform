@@ -101,7 +101,9 @@ class person(Base):
     firstname = Column("firstname", String)
     lastname = Column("lastname", String)
     others = Column("others", JSONB)
-    role = Column("role", Enum(Role))
+    role = Column(
+        "role", Enum(Role, values_callable=lambda obj: [e.value for e in obj])
+    )
     skills = relationship(
         "skill",
         secondary=person_skill_link.__table__,

@@ -68,7 +68,9 @@ person = Table(
     Column("firstname", String),
     Column("lastname", String),
     Column("others", JSONB),
-    Column("role", Enum(Role)),
+    Column(
+        "role", Enum(Role, values_callable=lambda obj: [e.value for e in obj])
+    ),
 )
 
 skill = Table(
