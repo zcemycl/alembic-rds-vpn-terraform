@@ -10,3 +10,4 @@ sqlalchemy[asyncio]
 pgvector
 asyncio
 psycopg2-binary
+sqlalchemy-utils
