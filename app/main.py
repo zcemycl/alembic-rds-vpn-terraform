@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
+from sqlalchemy.sql.expression import func
 
 import example_package.dataclasses.orm as d
 
@@ -32,6 +33,16 @@ async def get_async_persons(
 ):
     stmt = select(d.person)
     res = (await session.execute(stmt)).scalars().all()
-    jsons = [tmpres.__dict__ for tmpres in res]
+    jsons = [tmp.as_dict() for tmp in res]
     logger.info(jsons)
     return jsons
+
+
+@app.get("/async/skills")
+async def get_async_skills(
+    session: AsyncSession = Depends(get_async_session),
+):
+    stmt = select(func.distinct(d.skill.name).label("name"))
+    res = (await session.execute(stmt)).mappings().all()
+    logger.info(res)
+    return res

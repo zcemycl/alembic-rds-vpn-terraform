@@ -22,8 +22,16 @@ async def test_async_persons(test_session_orm, test_async_client: AsyncClient):
     ps = [d.person(**tmpjson) for tmpjson in jsons]
     test_session_orm.add_all(ps)
     await test_session_orm.commit()
-
     resp = await test_async_client.get("/async/persons")
+    assert resp.status_code == 200
+    assert len(resp.json()) == 2
 
+
+@pytest.mark.asyncio
+async def test_async_skills(test_session_orm, test_async_client: AsyncClient):
+    jsons = [{"name": "Python"}, {"name": "tennis"}]
+    test_session_orm.add_all([d.skill(**tmpjson) for tmpjson in jsons])
+    await test_session_orm.commit()
+    resp = await test_async_client.get("/async/skills")
     assert resp.status_code == 200
     assert len(resp.json()) == 2
