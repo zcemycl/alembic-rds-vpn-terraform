@@ -11,10 +11,15 @@
                     "match": "user",
                     "claims": {
                         "sub": "user",
+                        "name": "user",
+                        "given_name": "user firstname",
+                        "family_name": "user surname",
+                        "preferred_username": "user",
+                        "phone_number": "+441234",
+                        "email": "user@notarealuser.com",
                         "aud": [
                             "user"
-                        ],
-                        "email": "user@notarealuser.com"
+                        ]
                     }
                 },
                 {
@@ -22,10 +27,15 @@
                     "match": "admin",
                     "claims": {
                         "sub": "admin",
+                        "name": "admin",
+                        "given_name": "admin firstname",
+                        "family_name": "admin surname",
+                        "preferred_username": "admin",
+                        "phone_number": "+441234",
+                        "email": "admin@notarealuser.com",
                         "aud": [
                             "admin"
-                        ],
-                        "email": "admin@notarealuser.com"
+                        ]
                     }
                 }
             ]
