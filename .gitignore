@@ -165,3 +165,4 @@ dmypy.json
 *.db
 *.hcl
 ./terraform
+.DS_Store
