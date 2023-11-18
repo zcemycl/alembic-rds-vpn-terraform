@@ -4,7 +4,7 @@ networks:
     driver: bridge
 services:
   oauth:
-    image: ghcr.io/navikt/mock-oauth2-server:0.5.8
+    image: ghcr.io/navikt/mock-oauth2-server:2.0.0
     container_name: oauth
     ports:
       - "8002:8080"
