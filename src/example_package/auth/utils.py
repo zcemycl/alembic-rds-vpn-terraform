@@ -9,6 +9,7 @@ URL_JWKS = "http://localhost:8002/default_issuer/jwks"
 URL_USERINFO = "http://localhost:8002/default_issuer/userinfo"
 URL_REVOKE = "http://localhost:8002/default_issuer/revoke"
 URL_END = "http://localhost:8002/default_issuer/.well-known/endsession"
+URL_INTROSPECT = "http://localhost:8002/default_issuer/introspect"
 
 
 def get_well_known_endpoint(url: str = URL_CONF):
@@ -31,6 +32,7 @@ def get_token(
         "client_id": client_id,
         "client_secret": client_secret,
         "mock_type": user,
+        # "scope": "http://localhost:8002/default_issuer/introspect"
     }
     if grant_type == "refresh_token":
         data["refresh_token"] = refresh_token
@@ -66,6 +68,25 @@ def revoke_token(
             "client_id": "fake",
             "token": token,
             "token_type_hint": token_type,  # only refresh_token
+        },
+    )
+    print(resp)
+    print(resp.text)
+
+
+def introspect(token: str, url: str = URL_INTROSPECT):
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Bearer {token}",
+    }
+    resp = requests.post(
+        url,
+        headers=headers,
+        data={
+            "client_id": "fake",
+            "client_secret": "fake",
+            "token": token,
+            # "token_type_hint": "refresh_token",
         },
     )
     print(resp)
@@ -110,6 +131,9 @@ if __name__ == "__main__":
 
     print("------- jwks -------\n")
     print(get_jwks())
-    revoke_token(new_token_resp_user["refresh_token"])
+    introspect(new_token_resp_user["access_token"])
+    revoke_token(new_token_resp_user["access_token"])
+    introspect(new_token_resp_user["access_token"])
 
     end_session()
+    introspect(new_token_resp_user["access_token"])
