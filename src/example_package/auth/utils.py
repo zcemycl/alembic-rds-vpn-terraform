@@ -8,6 +8,7 @@ URL_TOKEN = "http://localhost:8002/default_issuer/token"
 URL_JWKS = "http://localhost:8002/default_issuer/jwks"
 URL_USERINFO = "http://localhost:8002/default_issuer/userinfo"
 URL_REVOKE = "http://localhost:8002/default_issuer/revoke"
+URL_END = "http://localhost:8002/default_issuer/.well-known/endsession"
 
 
 def get_well_known_endpoint(url: str = URL_CONF):
@@ -71,6 +72,13 @@ def revoke_token(
     print(resp.text)
 
 
+# https://www.npmjs.com/package/oauth2-mock-server?activeTab=readme
+def end_session(url: str = URL_END):
+    resp = requests.get(url)
+    print(resp)
+    print(resp.text)
+
+
 if __name__ == "__main__":
     print(get_well_known_endpoint())
     token_resp_user = get_token(
@@ -103,3 +111,5 @@ if __name__ == "__main__":
     print("------- jwks -------\n")
     print(get_jwks())
     revoke_token(new_token_resp_user["refresh_token"])
+
+    end_session()
