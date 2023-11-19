@@ -74,6 +74,7 @@ def revoke_token(
     print(resp.text)
 
 
+# https://www.oauth.com/oauth2-servers/token-introspection-endpoint/
 def introspect(token: str, url: str = URL_INTROSPECT):
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",

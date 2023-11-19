@@ -14,6 +14,17 @@ services:
       - JSON_CONFIG_PATH=/conf/OAuth2Config.json
     networks:
       - net
+  oauth-interactive:
+    image: ghcr.io/navikt/mock-oauth2-server:2.0.0
+    container_name: oauth_interactive
+    ports:
+      - "8003:8080"
+    volumes:
+      - "./src/docker/oauth2:/conf"
+    environment:
+      - JSON_CONFIG_PATH=/conf/OAuth2Config-interactive.json
+    networks:
+      - net
   db:
     build:
       context: .
