@@ -107,40 +107,59 @@ def end_session(url: str = URL_END):
 
 
 if __name__ == "__main__":
-    print(get_well_known_endpoint())
-    token_resp_user = get_token(
-        grant_type="client_credentials",
-        client_id="fake",
-        client_secret="fake",
-        user="user",
-    )
-    token_resp_admin = get_token(
-        grant_type="client_credentials",
-        client_id="fake",
-        client_secret="fake",
-        user="admin",
-    )
-    print("-------Token--------\n ")
-    print(token_resp_user)
-    print(token_resp_admin)
-    print(get_user_info(token_resp_user["access_token"]))
-    print(get_user_info(token_resp_admin["access_token"]))
+    # print(get_well_known_endpoint())
+    # token_resp_user = get_token(
+    #     grant_type="client_credentials",
+    #     client_id="fake",
+    #     client_secret="fake",
+    #     user="user",
+    # )
+    # token_resp_admin = get_token(
+    #     grant_type="client_credentials",
+    #     client_id="fake",
+    #     client_secret="fake",
+    #     user="admin",
+    # )
+    # print("-------Token--------\n ")
+    # print(token_resp_user)
+    # print(token_resp_admin)
+    # print(get_user_info(token_resp_user["access_token"]))
+    # print(get_user_info(token_resp_admin["access_token"]))
 
-    new_token_resp_user = get_token(
-        grant_type="refresh_token",
-        client_id="fake",
-        client_secret="fake",
-        refresh_token=token_resp_user["access_token"],
-        user="user",
+    # new_token_resp_user = get_token(
+    #     grant_type="refresh_token",
+    #     client_id="fake",
+    #     client_secret="fake",
+    #     refresh_token=token_resp_user["access_token"],
+    #     user="user",
+    # )
+    # print(get_user_info(new_token_resp_user["access_token"]))
+
+    # print("------- jwks -------\n")
+    # print(get_jwks())
+    # introspect(new_token_resp_user["access_token"])
+    # revoke_token(new_token_resp_user["access_token"])
+    # introspect(new_token_resp_user["access_token"])
+
+    # end_session()
+    # introspect(new_token_resp_user["access_token"])
+    # introspect(token_resp_admin["access_token"])
+
+    # https://identityserver4.readthedocs.io/en/latest/endpoints/authorize.html#
+    auth_resp = requests.get(
+        "http://localhost:8002/default_issuer/authorize",
+        params={
+            "client_id": "fake",
+            # "response_type": "id_token token",
+            # "scope": "openid profile",
+            "response_type": "code",
+            "scope": "openid",
+            "redirect_uri": "http://localhost:4555/login_page",
+            "state": "abc",
+            "nonce": "abc",
+            # "code": "1234"
+        },
+        data={"username": "user"},
     )
-    print(get_user_info(new_token_resp_user["access_token"]))
-
-    print("------- jwks -------\n")
-    print(get_jwks())
-    introspect(new_token_resp_user["access_token"])
-    revoke_token(new_token_resp_user["access_token"])
-    introspect(new_token_resp_user["access_token"])
-
-    end_session()
-    introspect(new_token_resp_user["access_token"])
-    introspect(token_resp_admin["access_token"])
+    print(auth_resp.text)
+    print(auth_resp.json())

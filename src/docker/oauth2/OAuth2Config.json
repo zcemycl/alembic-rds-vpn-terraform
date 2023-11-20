@@ -1,5 +1,6 @@
 {
     "interactiveLogin": false,
+    "loginPagePath": "/conf/login.example.html",
     "httpServer": "NettyWrapper",
     "tokenCallbacks": [
         {

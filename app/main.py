@@ -8,6 +8,9 @@ import example_package.dataclasses.orm as d
 
 from .database import get_async_session
 
+# import requests
+
+
 app = FastAPI()
 
 
@@ -46,3 +49,25 @@ async def get_async_skills(
     res = (await session.execute(stmt)).mappings().all()
     logger.info(res)
     return res
+
+
+# @app.get("/login_page")
+# async def login_page():
+#     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+#     data = {
+#         "grant_type":"client_credentials",
+#         "client_id":"fake",
+#         "client_secret":"fake",
+#         "mock_type":"user",
+#     }
+#     # if grant_type == "refresh_token":
+#     #     data["refresh_token"] = refresh_token
+#     resp = requests.post(
+#         "http://oauth:8080/default_issuer/token",
+#         headers=headers,
+#         data=data,
+#     )
+#     return {
+#         **resp.json(),
+#         "id_token": "7cZPgOvv?hMc6j8FqMuYhx=g45454gw?vOWZM?!vz2FB7dAf?O?63iY"
+#         }
