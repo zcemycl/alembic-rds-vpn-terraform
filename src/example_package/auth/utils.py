@@ -138,3 +138,4 @@ if __name__ == "__main__":
 
     end_session()
     introspect(new_token_resp_user["access_token"])
+    introspect(token_resp_admin["access_token"])
