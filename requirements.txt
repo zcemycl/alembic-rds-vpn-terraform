@@ -11,3 +11,6 @@ pgvector
 asyncio
 psycopg2-binary
 sqlalchemy-utils
+pydantic-settings
+python-jose
+PyJWT

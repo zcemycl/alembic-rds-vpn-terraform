@@ -12,6 +12,11 @@ URL_END = "http://localhost:8002/default_issuer/.well-known/endsession"
 URL_INTROSPECT = "http://localhost:8002/default_issuer/introspect"
 
 
+"""
+Separate Authentication Provider
+"""
+
+
 def get_well_known_endpoint(url: str = URL_CONF):
     resp = requests.get(url).json()
     return resp
